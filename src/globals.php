@@ -219,7 +219,9 @@ function LOGError($msg) {
 function LOGLevel($msg,$level,$dodb=true) {
 	$msga = sanitizeText(str_replace("\n", " ", $msg));
 	$msg = now() . ": ";
-	define_syslog_variables ();
+	if (function_exists('define_syslog_variables')) {
+		define_syslog_variables();
+	}
 	$prior = LOG_CRIT;
 	switch ($level) {
 		case 0: $msg .= "ERROR: ";
