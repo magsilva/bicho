@@ -24,7 +24,6 @@ header ("Pragma: no-cache");
 header ("Content-Type: text/html; charset=utf-8");
 session_start();
 ob_end_flush();
-require('../version.php');
 require_once("../globals.php");
 require_once("../db.php");
 

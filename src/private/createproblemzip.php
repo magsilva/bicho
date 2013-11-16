@@ -34,11 +34,9 @@ if(is_readable('/etc/boca.conf')) {
 
 if(is_readable($bocadir . $ds . '..' .$ds . 'db.php')) {
 	require_once($bocadir . $ds . '..' .$ds . 'db.php');
-	@include_once($bocadir . $ds . '..' .$ds . 'version.php');
 } else {
   if(is_readable($bocadir . $ds . 'db.php')) {
 	require_once($bocadir . $ds . 'db.php');
-	@include_once($bocadir . $ds . 'version.php');
   } else {
 	  echo "unable to find db.php";
 	  exit;
