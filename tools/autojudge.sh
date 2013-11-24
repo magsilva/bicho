@@ -16,11 +16,15 @@
 # //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ////////////////////////////////////////////////////////////////////////////////
 # // Last modified 06/aug/2012 by cassio@ime.usp.br
+
 if [ "`id -u`" != "0" ]; then
   echo "Must be run as root"
   exit 1
 fi
-bocadir=/var/www/boca
+
+bocadir=`pwd`/..
+
 [ -r /etc/boca.conf ] && . /etc/boca.conf
+
 cd $bocadir/src
 php private/autojudging.php
