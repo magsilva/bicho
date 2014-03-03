@@ -499,18 +499,19 @@ function DBUpdateRunAutojudging($contest, $site, $number, $ip, $answer, $stdout,
 	return true;
 }
 function DBGiveUpRunAutojudging($contest, $site, $number, $ip="", $ans="") {
+	var_dump($context, $site, $number, $ip, $ans);
 	$c = DBConnect();
 	DBExec($c, "begin work", "DBGiveUpRunAutojudging(transaction)");
 	$sql = "select * from runtable as r " .
 		"where r.contestnumber=$contest and r.runnumber=$number and r.runsitenumber=$site";
-	$r = DBExec ($c, $sql . " for update", "DBGiveUpRunAutoJudging(get run for update)");
+	$r = DBExec($c, $sql . " for update", "DBGiveUpRunAutoJudging(get run for update)");
 	$n = DBnlines($r);
 	if ($n != 1) {
 		DBExec($c, "rollback work", "DBGiveUpRunAutoJudging(rollback)");
 		LogLevel("Unable to giveup a run from autojudging (run=$number, site=$site, contest=$contest)",1);
 		return false;
 	}
-	$a = DBRow($r,0);
+	$a = DBRow($r, 0);
 	$t = time();
 
 	if($ip=="") {
@@ -528,6 +529,7 @@ function DBGiveUpRunAutojudging($contest, $site, $number, $ip="", $ans="") {
 	LOGLevel("Run gaveup from Autojudging (run=$number, site=$site, contest=$contest)", 3);
 	return true;
 }
+
 function DBAllRuns($contest) {
 	return DBOpenRunsSNS($contest,"x",-1);
 }
