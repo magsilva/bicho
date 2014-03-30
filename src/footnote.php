@@ -15,12 +15,8 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 05/aug/2012 by cassio@ime.usp.br
-
-require 'versionnum.php';
-
-echo "<br /><hr />\n";
-echo "<font size=\"-5\">Powered by BOCA $BOCAVERSION. Copyright (c) 2003-$YEAR BOCA System (bocasystem@gmail.com). All rights reserved.</font>\n";
-echo "</body></html>";
-exit;
 ?>
+
+</body>
+
+</html>

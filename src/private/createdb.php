@@ -29,11 +29,9 @@ if(is_readable('/etc/boca.conf')) {
 
 if(is_readable($bocadir . $ds . '..' .$ds . 'db.php')) {
 	require_once($bocadir . $ds . '..' .$ds . 'db.php');
-	@include_once($bocadir . $ds . '..' .$ds . 'version.php');
 } else {
   if(is_readable($bocadir . $ds . 'db.php')) {
 	require_once($bocadir . $ds . 'db.php');
-	@include_once($bocadir . $ds . 'version.php');
   } else {
 	  echo "unable to find db.php";
 	  exit;
@@ -45,10 +43,6 @@ ini_set('output_buffering','off');
 ini_set('implicit_flush','on');
 @ob_end_flush();
 
-if(system('test "`id -u`" -eq "0"',$retval)===false || $retval!=0) {
-	echo "Must be run as root\n";
-	exit;
-}
 echo "\nThis will erase all the data in your bocadb database.";
 echo "\n***** YOU WILL LOSE WHATEVER YOU HAVE THERE!!! *****";
 echo "\nType YES and press return to continue or anything else will abort it: ";

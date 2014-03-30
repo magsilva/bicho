@@ -51,8 +51,6 @@ if(isset($_GET["getsessionid"])) {
 }
 ob_end_flush();
 
-require_once('version.php');
-
 ?>
 <title>BOCA Online Contest Administrator <?php echo $BOCAVERSION; ?> - Login</title>
 <head>

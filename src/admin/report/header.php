@@ -29,7 +29,6 @@ ob_end_flush();
 //$loc = $_SESSION['loc'];
 $loc = $locr = "../..";
 
-require $locr.'/version.php';
 require_once($locr . "/globals.php");
 if(!ValidSession()) {
         InvalidSession($_SERVER['PHP_SELF']);
