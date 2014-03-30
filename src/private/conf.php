@@ -28,7 +28,6 @@ function globalconf() {
 	$conf['dbpass'] = 'boca';
 	$conf['dbsuperuser'] = 'boca'; // privileged boca user
 	$conf['dbsuperpass'] = 'boca';
-
 	// Initial password for any user (including 'system'). Set it to something hard to guess.
 	$conf['basepass'] = 'boca';
 
