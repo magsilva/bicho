@@ -203,6 +203,7 @@ while(42) {
 			cleardir($dir . $ds . "problemdata");
 			continue;
 		}
+<<<<<<< HEAD
 		if(($info=@parse_ini_file($dir . $ds . "problemdata" . $ds . "description" . $ds . 'problem.info'))===false) {
 			echo "Problem content missing (description/problem.info) -- please check the problem package\n";
 			DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojudging error: problem package file is invalid (2)");
@@ -269,6 +270,30 @@ while(42) {
 		cleardir($dir . $ds . "problemdata");
 		if($cont) {
 			continue;
+=======
+		$limits[$basename][basename($file)] = file('stdout',FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+	}
+	$cont=false;
+	foreach(glob($dir . $ds . "problemdata" . $ds . "tests" .$ds . '*') as $file) {
+		chdir($dir . $ds . "problemdata" . $ds . "tests");
+		chmod($file,0700);
+		$ex = escapeshellcmd($file);
+		$ex .= " >stdout 2>stderr";
+		@unlink('stdout');
+		@unlink('stderr');
+		echo "Executing TEST SCRIPT " . $ex . " at " . getcwd() . "\n";
+		if(system($ex, $retval)===false) $retval=-1;
+		if($retval != 0) {
+			echo "Error running test script -- please check the problem package or your installation\n";
+			echo "=====stderr======\n";
+			echo file_get_contents('stderr');
+			echo "\n=====stdout======\n";
+			echo file_get_contents('stdout');
+			echo "\n===========\n";
+			DBGiveUpRunAutojudging($contest, $site, $number, $ip, "Autojuging error: internal test script failed (" . $file . ")");
+			$cont=true;
+			break;
+>>>>>>> e911c708e2e5d087480564fcfcccd269bc93db58
 		}
 
 		$s = file_get_contents($dir . $ds . $run["inputname"]);
@@ -425,6 +450,7 @@ while(42) {
 		chmod($script, 0700);
 		mkdir('team', 0755);
 
+<<<<<<< HEAD
 		$scriptcomp = $dir . $ds . 'compare' . $ds . $run["extension"];
 		$answer='(Contact staff) nothing compared yet';
 		chmod($scriptcomp, 0700);
@@ -456,6 +482,58 @@ while(42) {
 							$errp=1; break;
 						}
 					}
+=======
+				$ex = escapeshellcmd($script) ." ".
+					escapeshellarg($basename) . " ".
+					escapeshellarg($dir . $ds . "input" . $ds . $file)." ".
+					escapeshellarg(trim($limits[$basename][$run["extension"]][0]))." ".
+					escapeshellarg(trim($limits[$basename][$run["extension"]][1]))." ".
+					escapeshellarg(trim($limits[$basename][$run["extension"]][2]))." ".
+					escapeshellarg(trim($limits[$basename][$run["extension"]][3]));
+				$ex .= " >stdout 2>stderr";
+
+				chdir($dir);
+				if(file_exists($dir . $ds . 'tmp')) {
+					cleardir($dir . $ds . 'tmp');
+				}
+				mkdir($dir . $ds . 'tmp', 0777);
+				@chown($dir . $ds . 'tmp',"nobody");
+				if(is_readable($dir . $ds . $basename)) {
+					@copy($dir . $ds . $basename, $dir . $ds . 'tmp' . $ds . $basename);
+					@chown($dir . $ds . 'tmp' . $ds . $basename,"nobody");
+					@chmod($dir . $ds . 'tmp' . $ds . $basename,0755);
+				}
+				if(is_readable($dir . $ds . 'run.jar')) {
+					@copy($dir . $ds . 'run.jar', $dir . $ds . 'tmp' . $ds . 'run.jar');
+					@chown($dir . $ds . 'tmp' . $ds . 'run.jar',"nobody");
+					@chmod($dir . $ds . 'tmp' . $ds . 'run.jar',0755);
+				}
+				if(is_readable($dir . $ds . 'run.exe')) {
+					@copy($dir . $ds . 'run.exe', $dir . $ds . 'tmp' . $ds . 'run.exe');
+					@chown($dir . $ds . 'tmp' . $ds . 'run.exe',"nobody");
+					@chmod($dir . $ds . 'tmp' . $ds . 'run.exe',0755);
+				}
+				chdir($dir . $ds . 'tmp');
+				echo "Executing " . $ex . " at " . getcwd() . " for input " . $file . "\n";
+				if(system($ex, $localretval)===false) $localretval=-1;
+				foreach (glob($dir . $ds . 'tmp' . $ds . '*') as $fne) {
+					@chown($fne,"nobody");
+					@chmod($fne,0755);
+				}
+				if(is_readable('stderr0'))
+					system('/bin/cat stderr0 >> stderr');
+				system('/bin/echo ##### STDERR FOR FILE ' . escapeshellarg($file) . ' >> ' . $dir . $ds . 'allerr');
+				system('/bin/cat stderr >> ' . $dir . $ds . 'allerr');
+				system('/bin/cat stdout > ' . $dir . $ds . 'team' . $ds . escapeshellarg($file));
+				system('/bin/echo ##### STDOUT FOR FILE ' . escapeshellarg($file) . ' >> ' . $dir . $ds . 'allout');
+				system('/bin/cat stdout >> ' . $dir . $ds . 'allout');
+				chdir($dir);
+				if($localretval != 0) {
+					list($retval,$answer) = exitmsg($localretval);
+					$answer = "(WHILE RUNNING) " . $answer;
+					break;
+				}
+>>>>>>> e911c708e2e5d087480564fcfcccd269bc93db58
 
 					$ex = escapeshellcmd($script) ." ".
 						escapeshellarg($basename) . " ".
