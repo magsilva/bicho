@@ -20,9 +20,11 @@
 $ds = DIRECTORY_SEPARATOR;
 if($ds=="") $ds = "/";
 
-require_once(dirname(__FILE__) . '/../db.php');
+require_once(dirname(__FILE__) . '/../' . 'db.php');
 
-if (getIP()!="UNKNOWN" || php_sapi_name()!=="cli") exit;
+if (getIP() != "UNKNOWN" || php_sapi_name() !== 'cli')
+	exit;
+
 ini_set('memory_limit','600M');
 ini_set('output_buffering','off');
 ini_set('implicit_flush','on');
@@ -32,7 +34,8 @@ echo "\nThis will erase all the data in your bocadb database.";
 echo "\n***** YOU WILL LOSE WHATEVER YOU HAVE THERE!!! *****";
 echo "\nType YES and press return to continue or anything else will abort it: ";
 $resp = strtoupper(trim(fgets(STDIN)));
-if($resp != 'YES') exit;
+if($resp != 'YES')
+	exit;
 
 echo "\ndropping database\n";
 DBDropDatabase();

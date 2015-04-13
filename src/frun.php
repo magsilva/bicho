@@ -453,7 +453,7 @@ function DBUpdateRunAutojudging($contest, $site, $number, $ip, $answer, $stdout,
 	$n = DBnlines($r);
 	if ($n != 1) {
 		DBExec($c, "rollback work", "DBUpdateRunAutoJudging(rollback)");
-		LogLevel("Unable to get a run for autojudging (run=$number, site=$site, contest=$contest)",1);
+		echo "Unable to get a run for autojudging (run=$number, site=$site, contest=$contest)";
 		return false;
 	}
 	$a = DBRow($r,0);
@@ -462,13 +462,13 @@ function DBUpdateRunAutojudging($contest, $site, $number, $ip, $answer, $stdout,
 
 	if (($oid1 = DB_lo_import($c, $stdout)) === false) {
 		DBExec($c, "rollback work", "DBUpdateRunAutojudging(rollback-stdout)");
-		LOGError("Unable to create a large object for file $stdout.");
+		echo "Unable to create a large object for file $stdout.";
 		return false;
 	}
 
 	if (($oid2 = DB_lo_import($c, $stderr)) === false) {
 		DBExec($c, "rollback work", "DBUpdateRunAutojudging(rollback-stderr)");
-		LOGError("Unable to create a large object for file $stderr.");
+		echo "Unable to create a large object for file $stderr.";
 		return false;
 	}
 
@@ -483,35 +483,33 @@ function DBUpdateRunAutojudging($contest, $site, $number, $ip, $answer, $stdout,
 
 	if($b["siteautojudge"]!="t") {
 		DBExec($c, "commit work", "DBUpdateRunAutojudging(commit)");
-		LOGLevel("Autojudging answered a run (run=$number, site=$site, contest=$contest, answer='$answer', retval=$retval)", 3);
+		echo "Autojudging answered a run (run=$number, site=$site, contest=$contest, answer='$answer', retval=$retval)";
 		return true;
 	}
 
 	echo "DEBUG: $contest, $site, " .$a["usernumber"].", $site, $number, $retval\n";
 	if(DBUpdateRunO($contest, $site, $a["usernumber"], $site, $number, $retval, $c)==false) {
 		DBExec($c, "rollback work", "DBUpdateRunAutoJudging(rollback)");
-		LOGError("Unable to automatically update a run answer (run=$number, site=$site, ".
-				 "contest=$contest, answer='$answer', retval=$retval)");
+		echo "Unable to automatically update a run answer (run=$number, site=$site, ". "contest=$contest, answer='$answer', retval=$retval)";
 		return false;
 	}
 	DBExec($c, "commit work", "DBUpdateRunAutojudging(commit)");
-	LOGLevel("Autojudging automatically answered a run (run=$number, site=$site, contest=$contest, retval=$retval, answer='$answer')", 3);
+	echo "Autojudging automatically answered a run (run=$number, site=$site, contest=$contest, retval=$retval, answer='$answer')";
 	return true;
 }
 function DBGiveUpRunAutojudging($contest, $site, $number, $ip="", $ans="") {
-	var_dump($context, $site, $number, $ip, $ans);
 	$c = DBConnect();
 	DBExec($c, "begin work", "DBGiveUpRunAutojudging(transaction)");
 	$sql = "select * from runtable as r " .
 		"where r.contestnumber=$contest and r.runnumber=$number and r.runsitenumber=$site";
-	$r = DBExec($c, $sql . " for update", "DBGiveUpRunAutoJudging(get run for update)");
+	$r = DBExec ($c, $sql . " for update", "DBGiveUpRunAutoJudging(get run for update)");
 	$n = DBnlines($r);
 	if ($n != 1) {
 		DBExec($c, "rollback work", "DBGiveUpRunAutoJudging(rollback)");
 		LogLevel("Unable to giveup a run from autojudging (run=$number, site=$site, contest=$contest)",1);
 		return false;
 	}
-	$a = DBRow($r, 0);
+	$a = DBRow($r,0);
 	$t = time();
 
 	if($ip=="") {
@@ -529,7 +527,6 @@ function DBGiveUpRunAutojudging($contest, $site, $number, $ip="", $ans="") {
 	LOGLevel("Run gaveup from Autojudging (run=$number, site=$site, contest=$contest)", 3);
 	return true;
 }
-
 function DBAllRuns($contest) {
 	return DBOpenRunsSNS($contest,"x",-1);
 }
@@ -611,7 +608,37 @@ function DBOpenRunsSNS($contest,$site,$st,$order='run') {
 	for ($i=0;$i<$n;$i++)
 		$a[$i] = DBRow($r,$i);
 	return $a;
+}	
+
+
+function create_zipB($files = array(),$destination = '',$overwrite = false) {
+	$valid_files = array();
+
+	if(is_array($files)) {
+		foreach($files as $file) {
+		    	if(file_exists($file)){
+					$valid_files[] = $file;
+				}
+		}
+	}
+
+	if(count($valid_files)) {
+		$zip = new ZipArchive();
+		if($zip->open($destination,$overwrite ? ZIPARCHIVE::OVERWRITE : ZIPARCHIVE::CREATE) !== true) {
+		    return false;
+		}
+		foreach($valid_files as $file) {
+		    $zip->addFile($file,$file);
+		}
+		$zip->close();
+			return file_exists($destination);
+	}
+
+	else{
+		return false;
+	}
 }
+
 function DBNewRun($param,$c=null) {
 	if(isset($param['contestnumber']) && !isset($param['contest'])) $param['contest']=$param['contestnumber'];
 	if(isset($param['sitenumber']) && !isset($param['site'])) $param['site']=$param['sitenumber'];
@@ -794,9 +821,6 @@ function DBNewRun($param,$c=null) {
 	}
 	$ret=1;
 	if($insert) {
-
-
-
 		if(substr($filepath,0,7)!="base64:") {
 			if (($oid = DB_lo_import($c, $filepath)) === false) {
 				DBExec($c, "rollback work", "DBNewRun(rollback-import)");
