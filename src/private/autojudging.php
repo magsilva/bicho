@@ -51,13 +51,7 @@ ini_set('implicit_flush', 'on');
 @ob_end_flush();
 echo "max memory set to ".ini_get('memory_limit')."\n";
 
-$tmpdir = getenv("TMP");
-if ($tmpdir == "")
-    $tmpdir = getenv("TMPDIR");
-if ($tmpdir[0] != '/')
-    $tmdir = "/tmp";
-if ($tmpdir == "")
-    $tmpdir = "/tmp";
+$tmpdir = sys_get_temp_dir();
 
 $basdir = $ds;
 if (file_exists($ds.'bocajail'.$tmpdir))
@@ -124,7 +118,7 @@ while (42) {
     for ($i = 0; $i < 5; $i++) {
 	$name = tempnam($tmpdir, "boca");
 	$dir = $name.".d";
-	if (@mkdir($dir, 0755))
+	if (! mkdir($dir, 0755)) {
 	    break;
 	@unlink($name);
 	@rmdir($dir);

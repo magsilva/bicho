@@ -794,6 +794,9 @@ function DBNewRun($param,$c=null) {
 	}
 	$ret=1;
 	if($insert) {
+
+
+
 		if(substr($filepath,0,7)!="base64:") {
 			if (($oid = DB_lo_import($c, $filepath)) === false) {
 				DBExec($c, "rollback work", "DBNewRun(rollback-import)");
