@@ -1,1 +1,7 @@
-Please find the documentation (including the license) in the doc/ folder.
+Download dependencies:
+curl -sS https://getcomposer.org/installer | php
+php composer.phar install
+
+
+Run tests:
+./vendor/bin/phpunit test/GccRunnerTest.php

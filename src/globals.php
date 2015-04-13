@@ -1,7 +1,7 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
 //BOCA Online Contest Administrator
-//    Copyright (C) 2003-2012 by BOCA Development Team (bocasystem@gmail.com)
+//    Copyright (C) by BOCA Development Team (bocasystem@gmail.com)
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
-// Last modified 09/nov/2012 by cassio@ime.usp.br
+// Last modified 15/aug/2014 by cassio@ime.usp.br
 require_once('db.php');
 define("dbcompat_1_4_1",true);
 
@@ -175,10 +175,13 @@ function getIPHost() {
 	$s='';
 	for($ipn=0;$ipn<count($ips);$ipn++) {
 		$ip = $ips[$ipn];
-		$host = @gethostbyaddr($ip);
-		if ($host != $ip && $host != "")
-			$s .= $ip . "(" . $host . ") ";
-		else
+//next lines where suggested to be removed by 
+//Mario Sanchez (Ing. de Sistemas y Computacion, Universidad de los Andes, Bogota, Colombia)
+//because they are very slow to run depending on the network
+//		$host = @gethostbyaddr($ip);
+//		if ($host != $ip && $host != "")
+//			$s .= $ip . "(" . $host . ") ";
+//		else
 			$s .= $ip . ' ';
 	}
 	return $s;
