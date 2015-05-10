@@ -1,71 +1,79 @@
 <?php
-require_once(__DIR__ .'/Gcc.class.php');
-require_once(__DIR__.'/Runner.class.php');
-require_once(__DIR__.'/PHP-FineDiff/finediff.php');
+
+require_once(__DIR__ . '/Gcc.class.php');
+require_once(__DIR__ . '/Runner.class.php');
 
 
- /** tipos de erros 
-  * Resposta					Descrição
-  * YES 						Seu programa foi aceito, e você receberá um balão da cor correspondente ao problema.
-  * NO: Incorrect Output 		Também conhecido como Wrong Answer. Indica que seu programa respondeu incorretamente a algum(ns) dos testes dos 								juízes.
-  * NO: Time-limit Exceeded 	A execução do seu programa excedeu o tempo permitido pelos juízes. Esse limite de tempo usualmente não é divulgado 									aos times e pode variar para cada problema.
-  * NO: Runtime Error 			Durante o teste ocorreu um erro de execução (causado pelo seu programa) na máquina dos juízes. Acesso a posições 									irregulares de memória ou estouro dos limites da máquina são os erros mais comuns.
-  * NO: Compilation Error 		Seu programa tem erros de sintaxe. Pode ser ainda que você errou o nome do problema ou linguagem no momento da 									submissão.
-  * NO: Output Format Error 	Também conhecido como Presentation Error, indica que a saída do seu programa não segue a especificação exigida na 									folha de questões, apesar do "resultado" estar correto. Corrija para se adequar à especificação do problema.
-  * NO: Contact Staff 			Você deve pedir a presença do pessoal de staff, pois algum erro incomum aconteceu.
- **/
- 
- /**
-  * return 1 -> successfully unpacked. or return -1 -> Error decompressing.
-  * return 2 -> successfully compiled. or return -2 -> Compilation error.
-  * return 4 -> successfully executed. or return -4 -> Runtime error (Time-limit Exceeded).
-  * return 8 -> correct output. or return -8 -> Output Format Error. or return -9 -> Incorrect Output.
-  * return default ->  Contact Staff
- **/
- 
 class Judge
 {
-	function judge() {
-		// char funcao para desconpactar os arquivos para um diretório /etc/nomedoarq
-		$allreturn = 1; 
-		
-		if($allreturn == 1){
-			// Compilar usando GccCompiler
-			$gcccompiler = new GccCompiler();
-			$allreturn = $gcccompiler->compile(__DIR__. '/f91/', NULL, 'main');		
-			if($allreturn == -2){
-				echo " NO: Compilation Error\n";
-				return $allreturn;
+	/** tipos de erros 
+	  * Resposta					Descrição
+	  * YES 						Seu programa foi aceito, e você receberá um balão da cor correspondente ao problema.
+	  * NO: Incorrect Output 		Também conhecido como Wrong Answer. Indica que seu programa respondeu incorretamente a algum(ns) dos testes dos 								juízes.
+	  * NO: Time-limit Exceeded 	A execução do seu programa excedeu o tempo permitido pelos juízes. Esse limite de tempo usualmente não é divulgado 									aos times e pode variar para cada problema.
+	  * NO: Runtime Error 			Durante o teste ocorreu um erro de execução (causado pelo seu programa) na máquina dos juízes. Acesso a posições 									irregulares de memória ou estouro dos limites da máquina são os erros mais comuns.
+	  * NO: Compilation Error 		Seu programa tem erros de sintaxe. Pode ser ainda que você errou o nome do problema ou linguagem no momento da 									submissão.
+	  * NO: Output Format Error 	Também conhecido como Presentation Error, indica que a saída do seu programa não segue a especificação exigida na 									folha de questões, apesar do "resultado" estar correto. Corrija para se adequar à especificação do problema.
+	  * NO: Contact Staff 			Você deve pedir a presença do pessoal de staff, pois algum erro incomum aconteceu.
+	 **/
+
+	 /**
+	  * Judge a program submitted to BOCA.
+	  *
+	  * @return 0 if ok, -1 if it had an error when decompressing, -2 if an
+	  * compilation error, -4 if a runtime error (time-limit exceeded), -8 if
+	  * output format error, -9 if incorrect output, -10 if unknown error
+	  * (contact staff).
+ 	  */
+ 	public function judge($work_dir, $output_dir = NULL, $output_main = NULL)
+	{
+		try {
+			if ($result == 1){
+				// Compilar usando GccCompiler
+				$gcccompiler = new GccCompiler();
+				$result = $gcccompiler->compile($workdir, $output_dir, $output_main);
+				if($result == -2){
+					echo " NO: Compilation Error\n";
+					return $result;
+				}
 			}
+
+			if ($result == 2){
+				// Executar usando Runner
+				$runner = new Runner();
+				$result = $runner->execute($output_dir . '/' . $output_main, NULL, NULL, __DIR__ . '/f91/entrada_f91', './output.txt');
+				if($result == -4) {
+					echo "NO: Time-limit Exceeded\n";
+					return $result;
+				}
+			}
+
+			if ($result == 4){
+				//Comparar resultado
+				$result =  $this->compareResult(__DIR__.'/f91/saida_f91', __DIR__.'/output.txt');
+				if($result == -8) {
+					echo "NO: Output Format Error \n";
+					return $result;
+				}
+				else if($result == -9){
+					echo "NO: Incorrect Output \n";
+					return $result;
+				}
+			}
+
+			if($result == 8){
+				echo "YES\n";
+				return $result;
+			}
+
+			return -10;
+
+		} catch (Exception $e) {
+			return -10;
 		}
-		if($allreturn == 2){
-			// Executar usando Runner
-			$runner = new Runner();
-			$allreturn = $runner->execute(__DIR__ . '/f91/main', NULL, NULL, __DIR__ . '/f91/entrada_f91', './output.txt');
-			if($allreturn == -4) {
-				echo "NO: Time-limit Exceeded\n";
-				return $allreturn;
-			}
-		}
-		if($allreturn == 4){
-			//Comparar resultado
-			$allreturn =  $this->compareresult(__DIR__.'/f91/saida_f91', __DIR__.'/output.txt');
-			if($allreturn == -8) {
-				echo "NO: Output Format Error \n";
-				return $allreturn;
-			}
-			else if($allreturn == -9){
-				echo "NO: Incorrect Output \n";
-				return $allreturn;
-			}
-		}			
-		if($allreturn == 8){
-			echo "YES\n";
-			return $allreturn;
-		}			
 	}
 
-	function compareresult($pathinput, $pathoutput){
+	private function compareResult($pathinput, $pathoutput){
 		$finediff = new FineDiff();
 		$input = fopen($pathinput, "r");
 		$output = fopen($pathoutput, "r");
@@ -92,12 +100,9 @@ class Judge
 					return -9;
 				}
 			}
-
 		}
 		return 8;
 	}
 }
 
-$teste = new Judge();
-$teste->judge();
 ?>
