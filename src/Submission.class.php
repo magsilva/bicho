@@ -6,7 +6,13 @@ class Submission
 {
 	private $id;
 
-	private 
+	private $team;	
+
+	private $workDir;
+
+	private $language;
+
+	private $contest;
 }
 
 
