@@ -1,14 +1,12 @@
 <?php
 
-namespace BOCA;
-
 class Submission
 {
 	private $id;
 
 	private $team;	
 
-	private $workDir;
+	public $workDir;
 
 	private $language;
 
