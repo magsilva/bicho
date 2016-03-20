@@ -309,11 +309,6 @@ if($retval != 0) {
 		continue;
 	}
 
-
-
-
-
-
 	chdir($dir);
 	chmod($script, 0700);
 	mkdir('team', 0755);

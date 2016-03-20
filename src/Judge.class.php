@@ -8,12 +8,19 @@ class Judge
 {
 	/** tipos de erros 
 	  * Resposta					Descrição
+	  *
 	  * YES 						Seu programa foi aceito, e você receberá um balão da cor correspondente ao problema.
-	  * NO: Incorrect Output 		Também conhecido como Wrong Answer. Indica que seu programa respondeu incorretamente a algum(ns) dos testes dos 								juízes.
-	  * NO: Time-limit Exceeded 	A execução do seu programa excedeu o tempo permitido pelos juízes. Esse limite de tempo usualmente não é divulgado 									aos times e pode variar para cada problema.
-	  * NO: Runtime Error 			Durante o teste ocorreu um erro de execução (causado pelo seu programa) na máquina dos juízes. Acesso a posições 									irregulares de memória ou estouro dos limites da máquina são os erros mais comuns.
-	  * NO: Compilation Error 		Seu programa tem erros de sintaxe. Pode ser ainda que você errou o nome do problema ou linguagem no momento da 									submissão.
-	  * NO: Output Format Error 	Também conhecido como Presentation Error, indica que a saída do seu programa não segue a especificação exigida na 									folha de questões, apesar do "resultado" estar correto. Corrija para se adequar à especificação do problema.
+	  *
+	  * NO: Incorrect Output 		Também conhecido como Wrong Answer. Indica que seu programa respondeu incorretamente a algum(ns) dos testes dos juízes.
+	  *
+	  * NO: Time-limit Exceeded 	A execução do seu programa excedeu o tempo permitido pelos juízes. Esse limite de tempo usualmente não é divulgado aos times e pode variar para cada problema.
+	  *
+	  * NO: Runtime Error 			Durante o teste ocorreu um erro de execução (causado pelo seu programa) na máquina dos juízes. Acesso a posições irregulares de memória ou estouro dos limites da máquina são os erros mais comuns.
+	  *
+	  * NO: Compilation Error 		Seu programa tem erros de sintaxe. Pode ser ainda que você errou o nome do problema ou linguagem no momento da submissão.
+	  *
+	  * NO: Output Format Error 	Também conhecido como Presentation Error, indica que a saída do seu programa não segue a especificação exigida na folha de questões, apesar do "resultado" estar correto. Corrija para se adequar à especificação do problema.
+	  *
 	  * NO: Contact Staff 			Você deve pedir a presença do pessoal de staff, pois algum erro incomum aconteceu.
 	 **/
 
@@ -25,6 +32,7 @@ class Judge
 	  * output format error, -9 if incorrect output, -10 if unknown error
 	  * (contact staff).
  	  */
+	 
  	public function judge($work_dir, $output_dir = NULL, $output_main = NULL)
 	{
 		try {
