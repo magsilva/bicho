@@ -24,9 +24,9 @@ function globalconf() {
 	$conf['dbhost'] = 'localhost';
 	$conf['dbport'] = 5432;
 	$conf['dbname'] = 'boca'; // name of the boca database
-	$conf['dbuser'] = 'boca'; // unprivileged boca user
+	$conf['dbuser'] = 'postgres'; // unprivileged boca user
 	$conf['dbpass'] = 'boca';
-	$conf['dbsuperuser'] = 'boca'; // privileged boca user
+	$conf['dbsuperuser'] = 'postgres'; // privileged boca user
 	$conf['dbsuperpass'] = 'boca';
 	// Initial password for any user (including 'system'). Set it to something hard to guess.
 	$conf['basepass'] = 'boca';
