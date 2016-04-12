@@ -2,6 +2,7 @@
 
 class SubmissionPostgresDAO implements SubmissionDAO{
 
+	private $answerSql;
 
 	/**
  	 * Delete record from table
@@ -27,8 +28,9 @@ class SubmissionPostgresDAO implements SubmissionDAO{
 	}
 
 	/**
- 	 * Read record in table
+ 	 * Faz um select tendo como retorno rundata e runfilename
  	 *
+ 	 * @param Numero do contest ae numero do problema de entrada (coluna:runnumber da tabela runtable)
  	 */
 	public function read($contestnumber, $runnumber){
 		$sql = 'SELECT r.rundata as rundata, r.runfilename as runfilename '.
@@ -39,12 +41,10 @@ class SubmissionPostgresDAO implements SubmissionDAO{
 		$sqlQuery->setNumber($contestnumber);
 		$sqlQuery->setNumber($runnumber);
 
-		$answerSql = $this->execute($sqlQuery);
-		$path = $this->executeExport($answerSql["runfilename"], $answerSql["rundata"]);	
-		$answerSql["pathToExport"] = $path;
-		// $answerSql = ('contestnumber' => $contestnumber);
-		// $answerSql = ('runnumber' => $runnumber);
-		return $answerSql;		
+		$this->answerSql = $this->execute($sqlQuery);
+		$path = $this->executeExport($this->answerSql["runfilename"], $this->answerSql["rundata"]);	
+		$this->answerSql["pathToExport"] = $path;
+		return $this;		
 	}
 
 	/**
@@ -79,5 +79,8 @@ class SubmissionPostgresDAO implements SubmissionDAO{
 		return $queryExecutor->executeUpdate($sqlQuery);
 	}
 
+	public function getAnswer(){
+		return $this->answerSql;
+	}
 }
 ?>
