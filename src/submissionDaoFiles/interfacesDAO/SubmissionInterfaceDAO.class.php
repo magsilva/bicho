@@ -1,6 +1,6 @@
 <?php
 
-interface SubmissionDAO{
+interface SubmissionInterfaceDAO{
 	
 	/**
  	 * Download data database 
@@ -28,7 +28,7 @@ interface SubmissionDAO{
  	 * Read record in table
  	 *
  	 */
-	public function read($contest, $runnumber);	
+	public function read($contest, $runnumber, $problemnumber);	
 
 	/**
  	 * Read record in table

@@ -1,6 +1,4 @@
 <?php
-// require_once(__DIR__ . '/Connection.class.php');
-// require_once(__DIR__ . '/Transaction.class.php');
 
 class QueryExecutor{
 	private $connection;
@@ -9,6 +7,7 @@ class QueryExecutor{
 		$this->connection = new Connection();
 		$this->begin();
 	}
+
 	public function execute($sqlQuery){
 		$query = $sqlQuery->getQuery();
 		$result = $this->connection->executeQuery($query);
@@ -50,8 +49,8 @@ class QueryExecutor{
 		return $row[0];
 	}
 
-	public function executeExport($name, $id){
-		$path = $this->createDir($name);
+	public function executeExport($name, $id, $path){
+		$path = $path . DIRECTORY_SEPARATOR . $name;
 		$this->connection->executeExport($path, $id);		
 		$this->commit();
 		return $path;
@@ -79,12 +78,5 @@ class QueryExecutor{
 		$this->connection->executeQuery('BEGIN');
 	}	
 
-	protected function createDir($name){
-		$path = tempnam ("/tmp/", "problem");
-		unlink($path);
-		mkdir($path, 0755);
-		$path = $path . DIRECTORY_SEPARATOR . $name;
-		return $path;
-	}
 }
 ?>

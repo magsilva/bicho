@@ -1,6 +1,6 @@
 <?php
 	//include all DAO files
-	require_once('interfacesDAO/SubmissionDAO.class.php');
+	require_once('interfacesDAO/SubmissionInterfaceDAO.class.php');
 	require_once('sqlDAO/QueryExecutor.class.php');
 	require_once('sqlDAO/SqlQuery.class.php');
 	require_once('sqlDAO/ConnectionFactory.class.php');

@@ -1,6 +1,6 @@
 <?php
 
-class SubmissionPostgresDAO implements SubmissionDAO{
+class SubmissionPostgresDAO implements SubmissionInterfaceDAO{
 
 	private $answerSql;
 
@@ -30,20 +30,33 @@ class SubmissionPostgresDAO implements SubmissionDAO{
 	/**
  	 * Faz um select tendo como retorno rundata e runfilename
  	 *
- 	 * @param Numero do contest ae numero do problema de entrada (coluna:runnumber da tabela runtable)
+ 	 * @param Numero do contest
+ 	 * @param numero do problema submetido (coluna:runnumber da tabela runtable)
+ 	 * @param Numero do pacote com entrada e saída do problema (coluna: problemnumber da tabela problemtable)
+
  	 */
-	public function read($contestnumber, $runnumber){
-		$sql = 'SELECT r.rundata as rundata, r.runfilename as runfilename '.
-			   'FROM runtable as r '.
-			   'WHERE r.contestnumber= ? AND r.runnumber = ?';
+	public function read($contestnumber, $runnumber, $problemnumber){
+		$sql = 'SELECT r.rundata as run_data, r.runfilename as run_file_name, '.
+			   'p.probleminputfilename as problem_name_input, p.probleminputfile as problem_data '.
+			   'FROM runtable as r, problemtable as p '.
+			   'WHERE r.contestnumber= ? AND r.runnumber = ? '.
+			   'AND p.contestnumber= ? AND p.problemnumber= ?';
 			   
 		$sqlQuery = new SqlQuery($sql);					   
 		$sqlQuery->setNumber($contestnumber);
 		$sqlQuery->setNumber($runnumber);
+		$sqlQuery->setNumber($contestnumber);
+		$sqlQuery->setNumber($problemnumber);
 
-		$this->answerSql = $this->execute($sqlQuery);
-		$path = $this->executeExport($this->answerSql["runfilename"], $this->answerSql["rundata"]);	
-		$this->answerSql["pathToExport"] = $path;
+		$this->answerSql = $this->execute($sqlQuery);	
+		$path = $this->createDir();
+
+		$pathProblem = $this->executeExport($this->answerSql["run_file_name"], $this->answerSql["run_data"], $path);	
+		$pathInputFile = $this->executeExport($this->answerSql["problem_name_input"], $this->answerSql["problem_data"], $path);	
+
+		$this->answerSql["main_path"] = $path;
+		$this->answerSql["submission_problem_path"] = $pathProblem;
+		$this->answerSql["problem_path_input"] = $pathInputFile;				
 		return $this;		
 	}
 
@@ -66,9 +79,9 @@ class SubmissionPostgresDAO implements SubmissionDAO{
 	/**
 	 * Execute export data
 	 */
-	protected function executeExport($name, $id){
+	protected function executeExport($name, $id, $path){
 		$queryExecutor = new QueryExecutor();
-		return $queryExecutor->executeExport($name, $id);
+		return $queryExecutor->executeExport($name, $id, $path);
 	}	
 		
 	/**
@@ -77,6 +90,13 @@ class SubmissionPostgresDAO implements SubmissionDAO{
 	protected function executeUpdate($sqlQuery){
 		$queryExecutor = new QueryExecutor();		
 		return $queryExecutor->executeUpdate($sqlQuery);
+	}
+
+	protected function createDir(){
+		$path = tempnam ("/tmp/", "problem");
+		unlink($path);
+		mkdir($path, 0755);
+		return $path;
 	}
 
 	public function getAnswer(){
