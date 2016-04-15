@@ -2,11 +2,17 @@
 
 class Zipfiles
 {
-	function create_dir(){
-		$path = tempnam ("/tmp/", "new");
-		unlink($path);
-		mkdir($path, 0755);
-		return $path;
+	function create_dir($path = null){
+		if($path == null){
+			$path = tempnam ("/tmp/", "new");
+			unlink($path);
+			mkdir($path, 0755);
+		}else{
+			$path = tempnam ($path . DIRECTORY_SEPARATOR, "new");
+			unlink($path);
+			mkdir($path, 0755);
+		}
+		return $path;		
 	}
 
 	function unzip($file_to_unzip, $path = null){
