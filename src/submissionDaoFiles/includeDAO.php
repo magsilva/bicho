@@ -7,5 +7,7 @@
 	require_once('sqlDAO/ConnectionProperty.class.php');
 	require_once('private/conf.php');
 	require_once('sqlDAO/Connection.class.php');
-	require_once('implementsDAO/SubmissionPostgresDAO.class.php');	
+	require_once('Submission.class.php');
+	require_once('Zip.class.php');
+	require_once('implementsDAO/SubmissionDAO.class.php');
 ?>

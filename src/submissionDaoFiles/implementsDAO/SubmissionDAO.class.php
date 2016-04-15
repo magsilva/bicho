@@ -1,9 +1,15 @@
 <?php
 
-class SubmissionPostgresDAO implements SubmissionInterfaceDAO{
+class SubmissionDAO implements SubmissionInterfaceDAO{
 
-	private $answerSql;
 
+	private $submission;
+	private $zipclass;
+
+	public function SubmissionDAO(){
+		$this->submission = new Submission();
+		$this->zipclass = new Zipfiles();
+	}
 	/**
  	 * Delete record from table
  	 */
@@ -36,11 +42,11 @@ class SubmissionPostgresDAO implements SubmissionInterfaceDAO{
 
  	 */
 	public function read($contestnumber, $runnumber, $problemnumber){
-		$sql = 'SELECT r.rundata as run_data, r.runfilename as run_file_name, '.
+		$sql = 'SELECT  r.runlangnumber as language, r.rundata as run_data, r.runfilename as run_file_name, r.usernumber as team, '.
 			   'p.probleminputfilename as problem_name_input, p.probleminputfile as problem_data '.
 			   'FROM runtable as r, problemtable as p '.
 			   'WHERE r.contestnumber= ? AND r.runnumber = ? '.
-			   'AND p.contestnumber= ? AND p.problemnumber= ?';
+			   'AND p.contestnumber= ? AND p.problemnumber= ? AND r.runproblem = p.problemnumber';
 			   
 		$sqlQuery = new SqlQuery($sql);					   
 		$sqlQuery->setNumber($contestnumber);
@@ -48,16 +54,26 @@ class SubmissionPostgresDAO implements SubmissionInterfaceDAO{
 		$sqlQuery->setNumber($contestnumber);
 		$sqlQuery->setNumber($problemnumber);
 
-		$this->answerSql = $this->execute($sqlQuery);	
-		$path = $this->createDir();
+		$answerSql = $this->execute($sqlQuery);	
+		$path = $this->zipclass->create_dir();
 
-		$pathProblem = $this->executeExport($this->answerSql["run_file_name"], $this->answerSql["run_data"], $path);	
-		$pathInputFile = $this->executeExport($this->answerSql["problem_name_input"], $this->answerSql["problem_data"], $path);	
+		$pathProblem = $this->executeExport($answerSql["run_file_name"], $answerSql["run_data"], $path);
+		if($this->zipclass->check_is_zip($pathProblem)){
+			$this->zipclass->unzip($pathProblem, $path);
+		}
 
-		$this->answerSql["main_path"] = $path;
-		$this->answerSql["submission_problem_path"] = $pathProblem;
-		$this->answerSql["problem_path_input"] = $pathInputFile;				
-		return $this;		
+		$pathInputFile = $this->executeExport($answerSql["problem_name_input"], $answerSql["problem_data"], $path);	
+		if($this->zipclass->check_is_zip($pathInputFile)){
+			$this->zipclass->unzip($pathInputFile, $path);
+		}
+
+		$this->submission->setWorkDir($path);
+		$this->submission->setNameFile($answerSql["run_file_name"]);
+		$this->submission->setContest($contestnumber);
+		$this->submission->setLanguage($answerSql["language"]);
+		$this->submission->setTeam($answerSql["team"]);
+
+		return $this->submission;	
 	}
 
 	/**
@@ -92,15 +108,5 @@ class SubmissionPostgresDAO implements SubmissionInterfaceDAO{
 		return $queryExecutor->executeUpdate($sqlQuery);
 	}
 
-	protected function createDir(){
-		$path = tempnam ("/tmp/", "problem");
-		unlink($path);
-		mkdir($path, 0755);
-		return $path;
-	}
-
-	public function getAnswer(){
-		return $this->answerSql;
-	}
 }
 ?>

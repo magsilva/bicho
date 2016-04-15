@@ -2,18 +2,28 @@
 
 class Zipfiles
 {
-	function unzip($path){
+	function create_dir(){
+		$path = tempnam ("/tmp/", "new");
+		unlink($path);
+		mkdir($path, 0755);
+		return $path;
+	}
+
+	function unzip($file_to_unzip, $path = null){
+		if($path == null) $path = $this->create_dir();
 		$arqz = new ZipArchive();
-		$arqz->open($path);
-
-		$output = tempnam ("/tmp/", "zip");
-		unlink($output);
-		mkdir($output, 0755);
-		mkdir($output.'/src/', 0755);
-		$arqz -> extractTo($output .'/src'); 
+		$arqz->open($file_to_unzip);
+		$arqz -> extractTo($path); 
 		$arqz -> close();
+		return $path;
+	}
 
-		return $output;
+	function check_is_zip($file_zip){
+		if(is_resource($zip = zip_open($file_zip))){
+			zip_close($zip);
+			return TRUE;
+		}
+		return FALSE;
 	}
 
 	function create_zip($filepath, $destination = '',$overwrite = false) {
