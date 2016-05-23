@@ -12,6 +12,10 @@ class Submission
 
 	private $contest;
 
+	private $notjudge; //essa variavel é um array de objetos contendo várias submissions
+
+	private $dataJudged;
+
 	public function setWorkDir($workDir){
 		$this->workDir = $workDir;
 	}
@@ -47,6 +51,22 @@ class Submission
 	public function getContest(){
 		return $this->contest;
 	}		
+
+	public function setNotjudge($notjudge){
+		$this->notjudge = $notjudge;
+	}
+
+	public function getNotjudge(){
+		return $this->notjudge;
+	}	
+
+	public function setDataJudged($dataJudged){
+		$this->dataJudged = $dataJudged;
+	}
+
+	public function getDataJudged(){
+		return $this->dataJudged;
+	}	
 }
 
 

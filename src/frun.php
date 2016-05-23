@@ -37,6 +37,7 @@ CREATE TABLE \"runtable\" (
 \"runproblem\" int4 NOT NULL,		-- (id do problema)
 \"runfilename\" varchar(200) NOT NULL,	-- (nome do arquivo submetido)
 \"rundata\" oid NOT NULL,		-- (codigo fonte do arquivo submetido)
+\"judgedata\" text DEFAULT NULL,		-- (resposta do julgamento)
 \"runanswer\" int4 DEFAULT 0 NOT NULL,	-- (resposta dada no julgamento)
 \"runstatus\" varchar(20) NOT NULL,	-- (status da submissao: openrun, judging, judged, deleted, judged+)
 \"runjudge\" int4 DEFAULT NULL,		-- (juiz que esta julgando)

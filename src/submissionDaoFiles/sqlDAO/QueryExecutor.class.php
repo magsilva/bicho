@@ -14,10 +14,13 @@ class QueryExecutor{
 		if(!$result){
 			throw new Exception("SQL Error: -->".$query."<--" . pg_last_error());
 		}
-		$row = pg_fetch_array($result);
-		pg_free_result ($result);
-		$this->connection->getClose();
-		return $row;
+		$i=0;
+		$tab = array();
+		while ($row = pg_fetch_object($result)){
+			$tab[$i++] = $row;
+		}
+		pg_free_result($result);
+		return $tab;
 	}
 	
 	
@@ -28,8 +31,8 @@ class QueryExecutor{
 		if(!$result){
 			throw new Exception("SQL Error: -->".$query."<--" . pg_last_error());
 		}
-		$this->connection->getClose();
-		return pg_affected_rows();		
+		$this->commit();
+		return pg_affected_rows($result);		
 	}
 
 	public function executeInsert($sqlQuery){

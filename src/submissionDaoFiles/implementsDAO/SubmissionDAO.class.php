@@ -7,7 +7,6 @@ class SubmissionDAO implements SubmissionInterfaceDAO{
 	private $zipclass;
 
 	public function SubmissionDAO(){
-		$this->submission = new Submission();
 		$this->zipclass = new Zipfiles();
 	}
 	/**
@@ -55,33 +54,63 @@ class SubmissionDAO implements SubmissionInterfaceDAO{
 		$sqlQuery->setNumber($problemnumber);
 
 		$answerSql = $this->execute($sqlQuery);	
+		
 		$path = $this->zipclass->create_dir();
 
-		$pathProblem = $this->executeExport($answerSql["run_file_name"], $answerSql["run_data"], $path);
+		$pathProblem = $this->executeExport($answerSql[0]->run_file_name, $answerSql[0]->run_data, $path);
 		if($this->zipclass->check_is_zip($pathProblem)){
 			$this->zipclass->unzip($pathProblem, $path);
 		}
 
-		$pathInputFile = $this->executeExport($answerSql["problem_name_input"], $answerSql["problem_data"], $path);	
+		$pathInputFile = $this->executeExport($answerSql[0]->problem_name_input, $answerSql[0]->problem_data, $path);	
 		if($this->zipclass->check_is_zip($pathInputFile)){
 			$this->zipclass->unzip($pathInputFile, $path);
 		}
-
-		$this->submission->setWorkDir($path);
-		$this->submission->setNameFile($answerSql["run_file_name"]);
-		$this->submission->setContest($contestnumber);
-		$this->submission->setLanguage($answerSql["language"]);
-		$this->submission->setTeam($answerSql["team"]);
-
-		return $this->submission;	
+		$submission = new Submission();
+		$submission->setWorkDir($path);
+		$submission->setNameFile($answerSql[0]->run_file_name);
+		$submission->setContest($contestnumber);
+		$submission->setLanguage($answerSql[0]->language);
+		$submission->setTeam($answerSql[0]->team);
+		return $submission;	
 	}
-
+ 
 	/**
  	 * Read record in table
  	 *
  	 */
-	public function readAll(){
+	public function readAllNotJudged($contestnumber){
+		$sql = 'SELECT runnumber, problemnumber '.
+			   'FROM runtable as r, problemtable as p '.
+			   'WHERE r.contestnumber= ? AND judgedata is null AND '.
+			   'r.contestnumber= p.contestnumber AND r.runproblem = p.problemnumber';
+		$sqlQuery = new SqlQuery($sql);	
+		$sqlQuery->setNumber($contestnumber);
+		$answerSql = $this->execute($sqlQuery);
+		
+		$tab = array();
+		foreach ($answerSql as $row) {
+			$tab[] = $this->read($contestnumber, $row->runnumber, $row->problemnumber);
+		}
+		$submission = new Submission();
+		$submission->setNotjudge($tab);
+		return $tab;
+	}
 
+	/**
+ 	 * Update record in table
+ 	 *
+ 	 */
+	public function saveResult($submission){
+		$serialized_data = serialize($submission->getDataJudged());
+		$sql = 'UPDATE runtable '.
+			   'SET judgedata = ? '.
+			   'WHERE contestnumber= ? AND runnumber = ?';
+		$sqlQuery = new SqlQuery($sql);
+		$sqlQuery->set($serialized_data);
+		$sqlQuery->setNumber($contestnumber);
+		$sqlQuery->setNumber($runnumber);
+		$answerSql = $this->executeUpdate($sqlQuery);
 	}
 
 	/**
@@ -108,5 +137,11 @@ class SubmissionDAO implements SubmissionInterfaceDAO{
 		return $queryExecutor->executeUpdate($sqlQuery);
 	}
 
+	/**
+	 * Insert row to table
+	 */
+	protected function executeInsert($sqlQuery){
+		return QueryExecutor::executeInsert($sqlQuery);
+	}
 }
 ?>

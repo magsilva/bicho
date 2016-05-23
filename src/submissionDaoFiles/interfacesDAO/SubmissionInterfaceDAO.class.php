@@ -28,12 +28,19 @@ interface SubmissionInterfaceDAO{
  	 * Read record in table
  	 *
  	 */
-	public function read($contest, $runnumber, $problemnumber);	
+	public function read($contestnumber, $runnumber, $problemnumber);	
 
 	/**
  	 * Read record in table
  	 *
  	 */
-	public function readAll();	
+	public function readAllNotJudged($contestnumber);	
+
+	/**
+ 	 * Read record in table
+ 	 *
+ 	 */
+	public function saveResult($submission);
+	
 }
 ?>
