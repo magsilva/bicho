@@ -20,6 +20,7 @@ class QueryExecutor{
 			$tab[$i++] = $row;
 		}
 		pg_free_result($result);
+		$this->connection->getClose();
 		return $tab;
 	}
 	

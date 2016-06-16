@@ -1,5 +1,5 @@
 <?php
-	require_once(__DIR__ . '/submissionDaoFiles/includeDAO.php');
+	require_once(__DIR__ . '/DaoFiles/includeDAO.php');
 	$submissionDAO = new SubmissionDAO();
 	//$objSubmission = $submissionDAO->read(2,1,1); //contestes, runnumber, problemnumber
 	//var_dump($objSubmission);

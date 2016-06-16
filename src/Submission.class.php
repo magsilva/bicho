@@ -10,7 +10,9 @@ class Submission
 
 	private $language;
 
-	private $contest;
+	private $contestNumber;
+
+	private $runNumber;
 
 	private $notjudge; //essa variavel é um array de objetos contendo várias submissions
 
@@ -44,13 +46,22 @@ class Submission
 		return $this->language;
 	}
 
-	public function setContest($contest){
-		$this->contest = $contest;
+	public function setContestNumber($contestNumber){
+		$this->contestNumber = $contestNumber;
 	}
 
-	public function getContest(){
-		return $this->contest;
+	public function getContestNumber(){
+		return $this->contestNumber;
 	}		
+
+
+	public function setRunNumber($runNumber){
+		$this->runNumber = $runNumber;
+	}
+
+	public function getRunNumber(){
+		return $this->runNumber;
+	}	
 
 	public function setNotjudge($notjudge){
 		$this->notjudge = $notjudge;

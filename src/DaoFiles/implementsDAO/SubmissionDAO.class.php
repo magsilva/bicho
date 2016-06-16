@@ -3,7 +3,6 @@
 class SubmissionDAO implements SubmissionInterfaceDAO{
 
 
-	private $submission;
 	private $zipclass;
 
 	public function SubmissionDAO(){
@@ -69,7 +68,8 @@ class SubmissionDAO implements SubmissionInterfaceDAO{
 		$submission = new Submission();
 		$submission->setWorkDir($path);
 		$submission->setNameFile($answerSql[0]->run_file_name);
-		$submission->setContest($contestnumber);
+		$submission->setContestNumber($contestnumber);
+		$submission->setRunNumber($runnumber);
 		$submission->setLanguage($answerSql[0]->language);
 		$submission->setTeam($answerSql[0]->team);
 		return $submission;	
@@ -101,15 +101,15 @@ class SubmissionDAO implements SubmissionInterfaceDAO{
  	 * Update record in table
  	 *
  	 */
-	public function saveResult($submission){
-		$serialized_data = serialize($submission->getDataJudged());
+	public function saveResult($submission, $result){
+		$serialized_data = serialize($result);
 		$sql = 'UPDATE runtable '.
 			   'SET judgedata = ? '.
 			   'WHERE contestnumber= ? AND runnumber = ?';
 		$sqlQuery = new SqlQuery($sql);
 		$sqlQuery->set($serialized_data);
-		$sqlQuery->setNumber($contestnumber);
-		$sqlQuery->setNumber($runnumber);
+		$sqlQuery->setNumber($submission->getContestNumber());
+		$sqlQuery->setNumber($submission->getRunNumber());
 		$answerSql = $this->executeUpdate($sqlQuery);
 	}
 
