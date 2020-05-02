@@ -1,26 +1,25 @@
 <?php
 
-require_once(__DIR__ . '/Gcc.class.php');
-require_once(__DIR__ . '/Runner.class.php');
+# require_once(__DIR__ . '/Gcc.class.php');
+# require_once(__DIR__ . '/Runner.class.php');
+# require_once(__DIR__ . '/BreakTcase.class.php');
+# require_once(__DIR__ . '/Proteum.class.php');
+# require_once(__DIR__ . '/Filesystem.class.php');
 
 
 class Judge
 {
+
+	const DEFAULT_RESULT_PROBLEM_FILE = '/ResultProblem.txt';
+
 	/** tipos de erros 
 	  * Resposta					Descrição
-	  *
 	  * YES 						Seu programa foi aceito, e você receberá um balão da cor correspondente ao problema.
-	  *
-	  * NO: Incorrect Output 		Também conhecido como Wrong Answer. Indica que seu programa respondeu incorretamente a algum(ns) dos testes dos juízes.
-	  *
-	  * NO: Time-limit Exceeded 	A execução do seu programa excedeu o tempo permitido pelos juízes. Esse limite de tempo usualmente não é divulgado aos times e pode variar para cada problema.
-	  *
-	  * NO: Runtime Error 			Durante o teste ocorreu um erro de execução (causado pelo seu programa) na máquina dos juízes. Acesso a posições irregulares de memória ou estouro dos limites da máquina são os erros mais comuns.
-	  *
-	  * NO: Compilation Error 		Seu programa tem erros de sintaxe. Pode ser ainda que você errou o nome do problema ou linguagem no momento da submissão.
-	  *
-	  * NO: Output Format Error 	Também conhecido como Presentation Error, indica que a saída do seu programa não segue a especificação exigida na folha de questões, apesar do "resultado" estar correto. Corrija para se adequar à especificação do problema.
-	  *
+	  * NO: Incorrect Output 		Também conhecido como Wrong Answer. Indica que seu programa respondeu incorretamente a algum(ns) dos testes dos 								juízes.
+	  * NO: Time-limit Exceeded 	A execução do seu programa excedeu o tempo permitido pelos juízes. Esse limite de tempo usualmente não é divulgado 									aos times e pode variar para cada problema.
+	  * NO: Runtime Error 			Durante o teste ocorreu um erro de execução (causado pelo seu programa) na máquina dos juízes. Acesso a posições 									irregulares de memória ou estouro dos limites da máquina são os erros mais comuns.
+	  * NO: Compilation Error 		Seu programa tem erros de sintaxe. Pode ser ainda que você errou o nome do problema ou linguagem no momento da 									submissão.
+	  * NO: Output Format Error 	Também conhecido como Presentation Error, indica que a saída do seu programa não segue a especificação exigida na 									folha de questões, apesar do "resultado" estar correto. Corrija para se adequar à especificação do problema.
 	  * NO: Contact Staff 			Você deve pedir a presença do pessoal de staff, pois algum erro incomum aconteceu.
 	 **/
 
@@ -32,48 +31,56 @@ class Judge
 	  * output format error, -9 if incorrect output, -10 if unknown error
 	  * (contact staff).
  	  */
-	 
- 	public function judge($work_dir, $output_dir = NULL, $output_main = NULL)
-	{
+ 	public function judge2($work_dir, $submission, $output_main = NULL, $output_dir = NULL)
+	{	
 		try {
-			if ($result == 1){
-				// Compilar usando GccCompiler
-				$gcccompiler = new GccCompiler();
-				$result = $gcccompiler->compile($workdir, $output_dir, $output_main);
-				if($result == -2){
-					echo " NO: Compilation Error\n";
-					return $result;
-				}
+			// Compilar usando GccCompiler
+			$gcccompiler = new GccCompiler();
+#			$submission->setWorkDir('/home/guilherme/Documentos/PHP_Projeto/');
+#			$result = $gcccompiler->compile($submission->getWorkDir(), $output_dir, $output_main);
+			echo $result;
+			if($result != 0){
+				echo " NO: Compilation Error\n";
+				return -2;
 			}
-
-			if ($result == 2){
 				// Executar usando Runner
-				$runner = new Runner();
-				$result = $runner->execute($output_dir . '/' . $output_main, NULL, NULL, __DIR__ . '/f91/entrada_f91', './output.txt');
-				if($result == -4) {
-					echo "NO: Time-limit Exceeded\n";
-					return $result;
-				}
+			$runner = new Runner();
+			$result = $runner->execute($work_dir . '/' . $output_main, NULL, NULL, $submission->getWorkDir(), $submission->getWorkDir().Judge::DEFAULT_RESULT_PROBLEM_FILE);
+			if($result != 0) {
+				echo "NO: Time-limit Exceeded\n";
+				return -4;
 			}
-
-			if ($result == 4){
-				//Comparar resultado
-				$result =  $this->compareResult(__DIR__.'/f91/saida_f91', __DIR__.'/output.txt');
-				if($result == -8) {
-					echo "NO: Output Format Error \n";
-					return $result;
-				}
-				else if($result == -9){
-					echo "NO: Incorrect Output \n";
-					return $result;
-				}
+		
+			
+			//Comparar resultado
+			$result =  $this->compareResult($submission->getWorkDir(), $submission->getWorkDir().Judge::DEFAULT_RESULT_PROBLEM_FILE);
+			if($result != 0) {
+				echo "NO: Output Format Error \n";
+				return -8;
 			}
+			else if($result != 0){
+				echo "NO: Incorrect Output \n";
+				return -9;
+			}
+			
 
-			if($result == 8){
+			if($result == 0)
+			{
 				echo "YES\n";
-				return $result;
+				return 8;
 			}
+			
+			//fazer if a respeito da linguagem C
 
+			//Break Test Case
+			/*$breakTcase = new BreakTcase(substr($submission->problem->sourcename,0,-2),$submission->workDir);
+			$breakTcase->setType($submission->problem->type);
+			foreach (glob('*') as $arquivo) 
+				$ret = $breakTcase->breakFile($arquivo);//Importar os casos de teste antes de execProteum
+
+    			//Proteum
+			execProteum($submission->workDir,$submission->problem->sourcename,$ret[0],strval($ret[1]));
+			*/
 			return -10;
 
 		} catch (Exception $e) {
@@ -110,6 +117,23 @@ class Judge
 			}
 		}
 		return 8;
+	}
+
+	private function execProteum($dirUnderTesting,$fileUnderTesting,$dirCaseTest,$sizeTests)
+	{
+		$nameProblem = substr($fileUnderTesting,0,-4);
+		
+		$proteum = new Proteum;
+		$proteum->setWorkingDir($dirUnderTesting);
+		$proteum->setMainFile($nameProblem);
+		$proteum->createSession($nameProblem, $fileUnderTesting);
+		$proteum->createTestSet($nameProblem);
+		$proteum->generateMutants($nameProblem, $nameProblem);
+		$proteum->changeVersion($dirUnderTesting,'2',$nameProblem);
+		$proteum->importAsciiTestCase2($nameProblem,$dirCaseTest,'case','param',$sizeTests,'1');
+		$proteum->changeVersion($dirUnderTesting,'1',$nameProblem);
+		$proteum->execMutants($nameProblem);
+		$proteum->statusReport();
 	}
 }
 

@@ -1,27 +1,27 @@
 <?php
+/*
 	require_once('Proteum.class.php');	
 
 	$proteum = new Proteum;
-	/*$proteum->createSession('Prime', 'Prime.c');
-	$proteum->createTestSet('Prime');
-	$proteum->generateMutants('Prime', 'Prime');
-	$proteum->importAsciiTestCase2('Prime','/home/guilherme/Documentos/PHP_Projeto/NewScript/tcase','case','param','1','2');
-	$proteum->execMutants('Prime');*/
+#	$proteum->createSession('Prime', 'Prime.c');
+#	$proteum->createTestSet('Prime');
+#	$proteum->generateMutants('Prime', 'Prime');
+#	$proteum->importAsciiTestCase2('Prime','/home/guilherme/Documentos/PHP_Projeto/NewScript/tcase','case','param','1','2');
+#	$proteum->execMutants('Prime');
 	$proteum->statusReport();
-/*
-	$functions = $proteum->getFunctions($zip->main_file,$output_dir);
-	$proteum->generateMutantsProteum($zip->main_file,$output_dir,$functions);
-	$proteum->execMutants($zip->main_file,$output_dir,$functions);
-	$proteum->statusProteum($zip->main_file,$output_dir);
 
+#	$functions = $proteum->getFunctions($zip->main_file,$output_dir);
+#	$proteum->generateMutantsProteum($zip->main_file,$output_dir,$functions);
+#	$proteum->execMutants($zip->main_file,$output_dir,$functions);
+#	$proteum->statusProteum($zip->main_file,$output_dir);
 
-/*	$conteudo = file_get_contents("/home/guilherme/Documentos/PHP_Projeto/Proteum_Prime_1/Prime.lst");
-		$findme = "MUTATION SCORE:";
-	$pos = stripos($conteudo, $findme);
-
-	$s = substr($conteudo,$pos+16,6);
-	
-	echo $s,"\n";	*/
+#	$conteudo = file_get_contents("/home/guilherme/Documentos/PHP_Projeto/Proteum_Prime_1/Prime.lst");
+#		$findme = "MUTATION SCORE:";
+#	$pos = stripos($conteudo, $findme);
+#
+#	$s = substr($conteudo,$pos+16,6);
+#	
+#	echo $s,"\n";
 
 	//copias os arquivos .c e .o para a pasta onde serao realizado os testes. Retorna o diretorio
 	function copyFiles($main_file,$path_files = NULL,$output_dir = NULL)
@@ -83,5 +83,5 @@
 
 		return substr($command,6);
 	}
-
+*/
 ?>
